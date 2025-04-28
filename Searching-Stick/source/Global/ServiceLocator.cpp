@@ -1,9 +1,12 @@
 #include "Global/ServiceLocator.h"
+#include "Main/GameService.h"
 
 namespace Global
 {
 	using namespace Graphics;
 	using namespace Event;
+	using namespace Gameplay;
+	using namespace Main;
 	using namespace Sound;
 	using namespace UI;
 
@@ -11,6 +14,7 @@ namespace Global
 	{
 		graphic_service = nullptr;
 		event_service = nullptr;
+		gameplay_service = nullptr;
 		sound_service = nullptr;
 		ui_service = nullptr;
 
@@ -23,6 +27,7 @@ namespace Global
 	{
 		event_service = new EventService();
 		graphic_service = new GraphicService();
+		gameplay_service = new GameplayService();
 		sound_service = new SoundService();
 		ui_service = new UIService();
 	}
@@ -31,6 +36,7 @@ namespace Global
 	{
 		graphic_service->initialize();
 		sound_service->initialize();
+		gameplay_service->initialize();
 		event_service->initialize();
 		ui_service->initialize();
 	}
@@ -40,12 +46,20 @@ namespace Global
 		graphic_service->update();
 		event_service->update();
 		ui_service->update();
+        if (GameService::getGameState() == GameState::GAMEPLAY)
+		{
+			gameplay_service->update();
+		}
 	}
 
 	void ServiceLocator::render()
 	{
 		ui_service->render();
 		graphic_service->render();
+		if (GameService::getGameState() == GameState::GAMEPLAY)
+		{
+			gameplay_service->render();
+		}
 	}
 
 	void ServiceLocator::clearAllServices()
@@ -66,9 +80,9 @@ namespace Global
 
 	GraphicService* ServiceLocator::getGraphicService() { return graphic_service; }
 
+	GameplayService* ServiceLocator::getGameplayService() { return gameplay_service; }
+
 	SoundService* ServiceLocator::getSoundService() { return sound_service; }
 
 	UIService* ServiceLocator::getUIService() { return ui_service; }
-
-	
 }
