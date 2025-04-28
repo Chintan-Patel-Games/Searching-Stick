@@ -3,7 +3,6 @@
 #include "Gameplay/StickCollection/StickCollectionModel.h"
 #include "Gameplay/StickCollection/StickCollectionController.h"
 
-
 namespace Gameplay
 {
 	using namespace Collection;
@@ -15,6 +14,8 @@ namespace Gameplay
 	private:
 		GameplayController* gameplay_controller;
 		StickCollectionContoller* collection_controller;
+
+		void initializeRandomSeed();
 
 	public:
 		GameplayService();
@@ -28,7 +29,8 @@ namespace Gameplay
 		void searchElement(Collection::SearchType search_type);
 
 		Collection::SearchType getCurrentSearchType();
-
+		int getNumberOfComparisons();
+		int getNumberOfArrayAccess();
 		int getNumberOfSticks();
 	};
 }
