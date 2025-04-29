@@ -47,11 +47,13 @@ namespace Gameplay
 
 	void GameplayService::searchElement(Collection::SearchType search_type) { collection_controller->searchElement(search_type); }
 
-	Collection::SearchType GameplayService::getCurrentSearchType() { return collection_controller->getSearchType(); }
+	Collection::SearchType GameplayService::getCurrentSearchType() const { return collection_controller->getSearchType(); }
 
-	int GameplayService::getNumberOfComparisons() { return collection_controller->getNumberOfComparisons(); }
+	int GameplayService::getNumberOfComparisons() const { return collection_controller->getNumberOfComparisons(); }
 
-	int GameplayService::getNumberOfArrayAccess() { return collection_controller->getNumberOfArrayAccess(); }
+	int GameplayService::getNumberOfArrayAccess() const { return collection_controller->getNumberOfArrayAccess(); }
 
-	int GameplayService::getNumberOfSticks() { return collection_controller->getNumberOfSticks(); }
+	int GameplayService::getNumberOfSticks() const { return collection_controller->getNumberOfSticks(); }
+
+	int GameplayService::getDelayMilliseconds() const { return collection_controller->getDelayMilliseconds(); }
 }

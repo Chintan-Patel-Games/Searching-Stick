@@ -7,7 +7,11 @@ namespace Gameplay
 
 	GameplayController::~GameplayController() { destroy(); }
 
-	void GameplayController::initialize() { gameplay_view->initialize(this); }
+	void GameplayController::initialize()
+	{
+		gameplay_view->initialize(this);
+		reset();
+	}
 
 	void GameplayController::update() { gameplay_view->update(); }
 	

@@ -4,6 +4,7 @@
 #include "Gameplay/StickCollection/Stick.h"
 #include "Gameplay/GameplayService.h"
 #include "Global/ServiceLocator.h"
+#include "Sound/SoundService.h"
 #include <random>
 
 namespace Gameplay
@@ -25,29 +26,53 @@ namespace Gameplay
 
 		void Gameplay::Collection::StickCollectionContoller::initialize()
 		{
+			collection_model->initialize();
 			initializeSticks();
+
 			reset();
 		}
 
 		void Gameplay::Collection::StickCollectionContoller::update()
 		{
+			processSearchThreadState();
+
+			collection_view->update();
+
 			for (int i = 0; i < sticks.size(); i++)
 				sticks[i]->stick_view->update();
 		}
 
 		void Gameplay::Collection::StickCollectionContoller::render()
 		{
+			collection_view->render();
 			for (int i = 0; i < sticks.size(); i++)
 				sticks[i]->stick_view->render();
 		}
 
 		void Gameplay::Collection::StickCollectionContoller::reset()
 		{
+			current_operation_delay = 0;
+
+			if (search_thread.joinable()) search_thread.join();
+
 			shuffleSticks();
 			updateSticksPosition();
 			resetSticksColor();
 			resetSearchStick();
 			resetVariables();
+		}
+
+		void Gameplay::Collection::StickCollectionContoller::searchElement(SearchType search_type)
+		{
+			this->search_type = search_type;
+
+			switch (search_type)
+			{
+			case Gameplay::Collection::SearchType::LINEAR_SEARCH:
+				current_operation_delay = collection_model->linear_search_delay;
+				search_thread = std::thread(&StickCollectionContoller::processLinearSearch, this);
+				break;
+			}
 		}
 
 		void Gameplay::Collection::StickCollectionContoller::initializeSticks()
@@ -57,7 +82,9 @@ namespace Gameplay
 			for (int i = 0; i < collection_model->number_of_elements; i++)
 			{
 				float rectangle_height = calculateStickHeight(i); //calc height
+
 				sf::Vector2f rectangle_size = sf::Vector2f(rectangle_width, rectangle_height);
+
 				sticks[i]->stick_view->initialize(rectangle_size, sf::Vector2f(0, 0), 0, collection_model->element_color);
 			}
 		}
@@ -119,14 +146,22 @@ namespace Gameplay
 			stick_to_search->stick_view->setFillColor(collection_model->search_element_color);
 		}
 
+		void Gameplay::Collection::StickCollectionContoller::processSearchThreadState()
+		{
+			if (search_thread.joinable() && stick_to_search == nullptr) joinThreads();
+		}
+
+		void Gameplay::Collection::StickCollectionContoller::joinThreads() { search_thread.join(); }
+
 		void Gameplay::Collection::StickCollectionContoller::processLinearSearch()
 		{
+			Sound::SoundService* sound_service = Global::ServiceLocator::getInstance()->getSoundService();
 			for (int i = 0; i < sticks.size(); i++)
 			{
 				number_of_array_access += 1;
 				number_of_comparisons++;
 
-				Global::ServiceLocator::getInstance()->getSoundService()->playSound(Sound::SoundType::COMPARE_SFX);
+				sound_service->playSound(Sound::SoundType::COMPARE_SFX);
 
 				if (sticks[i] == stick_to_search)
 				{
@@ -137,6 +172,7 @@ namespace Gameplay
 				else
 				{
 					sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
+					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 					sticks[i]->stick_view->setFillColor(collection_model->element_color);
 				}
 			}
@@ -155,6 +191,8 @@ namespace Gameplay
 
 		void Gameplay::Collection::StickCollectionContoller::destroy()
 		{
+			if (search_thread.joinable()) search_thread.join();
+
 			for (int i = 0; i < sticks.size(); i++) delete(sticks[i]);
 			sticks.clear();
 
@@ -162,24 +200,14 @@ namespace Gameplay
 			delete (collection_model);
 		}
 
-		void Gameplay::Collection::StickCollectionContoller::searchElement(SearchType search_type)
-		{
-			this->search_type = search_type;
+		SearchType Gameplay::Collection::StickCollectionContoller::getSearchType() const { return search_type; }
 
-			switch (search_type)
-			{
-			case Gameplay::Collection::SearchType::LINEAR_SEARCH:
-				processLinearSearch();
-				break;
-			}
-		}
+		int Gameplay::Collection::StickCollectionContoller::getNumberOfComparisons() const { return number_of_comparisons; }
 
-		SearchType Gameplay::Collection::StickCollectionContoller::getSearchType() { return search_type; }
+		int Gameplay::Collection::StickCollectionContoller::getNumberOfArrayAccess() const { return number_of_array_access; }
 
-		int Gameplay::Collection::StickCollectionContoller::getNumberOfComparisons() { return number_of_comparisons; }
+		int Gameplay::Collection::StickCollectionContoller::getNumberOfSticks() const { return collection_model->number_of_elements; }
 
-		int Gameplay::Collection::StickCollectionContoller::getNumberOfArrayAccess() { return number_of_array_access; }
-
-		int Gameplay::Collection::StickCollectionContoller::getNumberOfSticks() { return collection_model->number_of_elements; }
+		int Gameplay::Collection::StickCollectionContoller::getDelayMilliseconds() const { return current_operation_delay; }
 	}
 }
