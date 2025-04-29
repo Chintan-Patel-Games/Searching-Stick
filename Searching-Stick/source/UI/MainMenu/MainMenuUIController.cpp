@@ -5,6 +5,7 @@
 #include "Event/EventService.h"
 #include "Global/Config.h"
 #include "Global/ServiceLocator.h"
+#include "Gameplay/StickCollection/StickCollectionModel.h"
 
 namespace UI
 {
@@ -14,6 +15,8 @@ namespace UI
         using namespace Main;
         using namespace UIElement;
         using namespace Sound;
+        using namespace Gameplay;
+        using namespace Collection;
         using namespace Graphics;
 
         MainMenuUIController::MainMenuUIController()
@@ -22,10 +25,7 @@ namespace UI
             createButtons();
         }
 
-        MainMenuUIController::~MainMenuUIController()
-        {
-            destroy();
-        }
+        MainMenuUIController::~MainMenuUIController() { destroy(); }
 
         void MainMenuUIController::initialize()
         {
@@ -34,10 +34,7 @@ namespace UI
             registerButtonCallback();
         }
 
-        void MainMenuUIController::createImage()
-        {
-            background_image = new ImageView();
-        }
+        void MainMenuUIController::createImage() { background_image = new ImageView(); }
 
         void MainMenuUIController::createButtons()
         {
@@ -82,6 +79,8 @@ namespace UI
         void MainMenuUIController::binarySearchButtonCallback()
         {
             ServiceLocator::getInstance()->getSoundService()->playSound(SoundType::BUTTON_CLICK);
+            GameService::setGameState(GameState::GAMEPLAY);
+            ServiceLocator::getInstance()->getGameplayService()->searchElement(Gameplay::Collection::SearchType::BINARY_SEARCH);
         }
 
         void MainMenuUIController::quitButtonCallback()
