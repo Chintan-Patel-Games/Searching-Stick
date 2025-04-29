@@ -28,9 +28,10 @@ namespace Gameplay
 		void reset();
 		void searchElement(Collection::SearchType search_type);
 
-		Collection::SearchType getCurrentSearchType();
-		int getNumberOfComparisons();
-		int getNumberOfArrayAccess();
-		int getNumberOfSticks();
+		Collection::SearchType getCurrentSearchType() const;
+		int getNumberOfComparisons() const;
+		int getNumberOfArrayAccess() const;
+		int getNumberOfSticks() const;
+		int getDelayMilliseconds() const;
 	};
 }
