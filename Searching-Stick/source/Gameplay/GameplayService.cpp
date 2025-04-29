@@ -56,4 +56,6 @@ namespace Gameplay
 	int GameplayService::getNumberOfSticks() const { return collection_controller->getNumberOfSticks(); }
 
 	int GameplayService::getDelayMilliseconds() const { return collection_controller->getDelayMilliseconds(); }
+
+	sf::String GameplayService::getTimeComplexity() const { return collection_controller->getTimeComplexity(); }
 }

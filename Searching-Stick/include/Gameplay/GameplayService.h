@@ -33,5 +33,6 @@ namespace Gameplay
 		int getNumberOfArrayAccess() const;
 		int getNumberOfSticks() const;
 		int getDelayMilliseconds() const;
+		sf::String getTimeComplexity() const;
 	};
 }
