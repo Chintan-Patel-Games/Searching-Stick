@@ -25,7 +25,7 @@
 
 ## 🚀 How to Run
 
-  ###Prerequisites
+  ### Prerequisites
 
   - SFML installed on your system
 
